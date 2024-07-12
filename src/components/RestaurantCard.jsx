@@ -1,6 +1,7 @@
-import React from "react";
+//import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
+import PropTypes from "prop-types";
 
 const Rating = ({ rating }) => {
   const fullStars = Math.floor(rating);
@@ -35,6 +36,12 @@ const Rating = ({ rating }) => {
     </div>
   );
 };
+
+
+Rating.propTypes = {
+  rating: PropTypes.number.isRequired,
+};
+
 
 const RestaurantCard = ({ restaurant }) => {
   return (
@@ -74,6 +81,19 @@ const RestaurantCard = ({ restaurant }) => {
       </div>
     </div>
   );
+};
+
+RestaurantCard.propTypes = {
+  restaurant: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    photo: PropTypes.string.isRequired,
+    is_delivering_now: PropTypes.bool.isRequired,
+    offers: PropTypes.arrayOf(PropTypes.string).isRequired,
+    average_rating: PropTypes.number.isRequired,
+    cuisines: PropTypes.arrayOf(PropTypes.string).isRequired,
+    average_price_range: PropTypes.number.isRequired,
+    promotion_status: PropTypes.bool,
+  }).isRequired,
 };
 
 export default RestaurantCard;
