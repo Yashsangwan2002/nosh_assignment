@@ -1,98 +1,62 @@
-//import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStar } from "@fortawesome/free-solid-svg-icons";
+import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
+import io from 'socket.io-client';
 
-const Rating = ({ rating }) => {
-  const fullStars = Math.floor(rating);
-  const partialStar = rating - fullStars;
-
-  return (
-    <div className="flex gap-1 items-center ">
-      <div className="flex">
-        {[...Array(fullStars)].map((_, index) => (
-          <FontAwesomeIcon
-            className="bg-[#d0474a] mx-[0.13rem] rounded-sm py-[0.05rem] px-[0.1rem]"
-            width={12}
-            height={12}
-            key={index}
-            icon={faStar}
-            color="#FFFFFF"
-          />
-        ))}
-        {partialStar > 0 && (
-          <FontAwesomeIcon
-            className="bg-gray-400 mx-[0.2rem] rounded-sm p-[0.08rem]"
-            width={12}
-            height={12}
-            key="partial"
-            icon={faStar}
-            color="#FFFFFF"
-            style={{ opacity: partialStar }}
-          />
-        )}
-      </div>
-      <span className="text-xs font-semibold text-gray-500">{rating}(875 delivery reviews)</span>
-    </div>
-  );
+const toggleDish = async (dishId) => {
+  try {
+    const response = await fetch(`http://localhost:3000/api/dishes/toggle/${dishId}`, {
+      method: 'PATCH',
+    });
+    return response.json();
+  } catch (error) {
+    console.error("Failed to toggle dish status:", error);
+  }
 };
 
+const RestaurantCard = ({ dish }) => {
+  const [isPublished, setIsPublished] = useState(dish.isPublished);
 
-Rating.propTypes = {
-  rating: PropTypes.number.isRequired,
-};
+  const handleToggle = async () => {
+    const updatedDish = await toggleDish(dish.dishId);
+    setIsPublished(updatedDish.isPublished);
+    onToggle(updatedDish);
+  };
 
+  useEffect(() => {
+    const socket = io('http://localhost:3000');
+    socket.on('dishUpdated', updatedDish => {
+      if (updatedDish.dishId === dish.dishId) {
+        setIsPublished(updatedDish.isPublished);
+      }
+    });
 
-const RestaurantCard = ({ restaurant }) => {
+    return () => socket.disconnect();
+  }, [dish.dishId]);
+
   return (
-    <div
-      className={`rounded-lg md:w-[320px] md:h-[380px] space-y-1 cursor-pointer scale-100 transition hover:scale-[1.01] hover:shadow-lg p-2  ${
-        !restaurant.is_delivering_now && "grayscale opacity-50"
-      }`}
-    >
-      <div className="relative w-full h-56">
-        <img
-          className="rounded-lg w-full h-full object-cover"
-          src={restaurant.photo}
-          alt={restaurant.name}
-        />
-        {restaurant.is_delivering_now ? (
-          <span className="absolute z-10 bg-blue-400 text-white bottom-6 rounded-r-md px-1">
-            {restaurant.offers[0]}
-          </span>
-        ) : (
-          <span className="absolute z-10 bg-blue-400 text-white bottom-6 rounded-r-md px-1">
-            Closed
-          </span>
-        )}
-      </div>
-      <div className="space-y-1 p-1">
-        <div className="flex flex-col justify-between">
-          <h3 className="text-gray-700 truncate">{restaurant.name}</h3>
-          <Rating rating={restaurant.average_rating} />
-        </div>
-        <p className="truncate text-gray-500 text-sm">
-          {restaurant.cuisines.join(", ")}
-        </p>
-        <p className="text-gray-500 text-sm">{`₹${restaurant.average_price_range} per person`}</p>
-        {restaurant.promotion_status && (
-          <p className="text-gray-400">Promoted</p>
-        )}
+    <div className={`rounded-lg shadow-md overflow-hidden ${isPublished ? 'bg-white' : 'bg-gray-300'}`}>
+      <img src={dish.imageUrl} alt={dish.dishName} className="w-full h-48 object-cover" />
+      <div className={`p-4 ${isPublished ? '' : 'opacity-50'}`}>
+        <h2 className="text-xl font-semibold mb-2">{dish.dishName}</h2>
+        <p className="text-gray-600 mb-2">{dish.cuisine}</p>
+        <button
+          onClick={handleToggle}
+          className={`px-4 py-2 rounded ${isPublished ? "bg-red-500 text-white" : "bg-green-500 text-white"}`}
+        >
+          {isPublished ? "Unpublish" : "Publish"}
+        </button>
       </div>
     </div>
   );
 };
 
 RestaurantCard.propTypes = {
-  restaurant: PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    photo: PropTypes.string.isRequired,
-    is_delivering_now: PropTypes.bool.isRequired,
-    offers: PropTypes.arrayOf(PropTypes.string).isRequired,
-    average_rating: PropTypes.number.isRequired,
-    cuisines: PropTypes.arrayOf(PropTypes.string).isRequired,
-    average_price_range: PropTypes.number.isRequired,
-    promotion_status: PropTypes.bool,
+  dish: PropTypes.shape({
+    dishId: PropTypes.string.isRequired,
+    dishName: PropTypes.string.isRequired,
+    imageUrl: PropTypes.string.isRequired,
+    isPublished: PropTypes.bool.isRequired,
+    cuisine: PropTypes.string.isRequired,
   }).isRequired,
 };
 

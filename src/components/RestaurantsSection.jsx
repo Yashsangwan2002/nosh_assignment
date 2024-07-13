@@ -1,49 +1,47 @@
 import { useState } from "react";
-import RestaurantsList from "./RestaurantsList";
 import PropTypes from "prop-types";
 import FilterRow from "./FilterRow";
+import RestaurantCard from "./RestaurantCard";
 
-const RestaurantsSection = ({ restaurants }) => {
-  const [filteredRestaurantsData, setFilteredRestaurantsData] = useState(restaurants);
+const RestaurantsSection = ({ dishes }) => {
+  const [filteredDishes, setFilteredDishes] = useState(dishes);
 
   const handleFilter = (filters) => {
     if (filters?.selectedCuisine === "All") {
-      setFilteredRestaurantsData(restaurants);
+      setFilteredDishes(dishes);
     } else {
-      setFilteredRestaurantsData(
-        restaurants?.filter((restaurant) =>
-          restaurant?.cuisines?.includes(filters.selectedCuisine)
+      setFilteredDishes(
+        dishes?.filter((dish) =>
+          dish?.cuisine?.includes(filters.selectedCuisine)
         )
       );
     }
   };
 
   return (
-    <div className="space-y-4 relative p-2">
-      <div>
+    <section className="py-12">
+      <div className="container mx-auto px-4">
         <FilterRow handleFilter={handleFilter} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
+          {filteredDishes.map((dish) => (
+            <RestaurantCard key={dish.dishId} dish={dish} />
+          ))}
+        </div>
       </div>
-      <RestaurantsList restaurants={filteredRestaurantsData} />
-    </div>
+    </section>
   );
 };
 
-
 RestaurantsSection.propTypes = {
-  restaurants: PropTypes.arrayOf(
+  dishes: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      name: PropTypes.string.isRequired,
-      photo: PropTypes.string.isRequired,
-      is_delivering_now: PropTypes.bool.isRequired,
-      average_rating: PropTypes.number.isRequired,
-      cuisines: PropTypes.arrayOf(PropTypes.string).isRequired,
-      average_price_range: PropTypes.number.isRequired,
-      promotion_status: PropTypes.bool,
-      offers: PropTypes.arrayOf(PropTypes.string),
+      dishId: PropTypes.string.isRequired,
+      dishName: PropTypes.string.isRequired,
+      imageUrl: PropTypes.string.isRequired,
+      isPublished: PropTypes.bool.isRequired,
+      cuisine: PropTypes.string.isRequired,
     })
   ).isRequired,
 };
-
 
 export default RestaurantsSection;
