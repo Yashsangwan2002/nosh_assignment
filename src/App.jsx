@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { getDishesData } from "./api/resturants";
-import RestaurantsSection from "./components/RestaurantsSection";
+import { getDishesData } from "./api/dish";
+import RestaurantsSection from "./components/dishSection";
 import Nav from "./components/Nav";
 import { io } from "socket.io-client";
 

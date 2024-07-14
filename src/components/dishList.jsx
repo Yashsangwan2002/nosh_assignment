@@ -1,23 +1,24 @@
-//import React from "react";
-import RestaurantCard from "./RestaurantCard";
+// import React from "react"; // You might need to import React if not already imported
+import DishCard from "./DishCard"; // Corrected import
 import { sortRestaurants } from "../utilities";
 import PropTypes from "prop-types";
 
-const RestaurantsList = ({ restaurants }) => {
-  const sortedRestaurants = sortRestaurants(restaurants);
+const DishesList = ({ dishes }) => {
+  const sortedDishes = sortRestaurants(dishes); // Assuming `sortRestaurants` sorts dishes
   return (
     <div className="space-y-3">
-      <h2>New Delhi Restaurants</h2>
+      <h2>New Delhi Dishes</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 justify-center">
-        {sortedRestaurants.map((restaurant) => (
-          <RestaurantCard key={restaurant.id} restaurant={restaurant} />
+        {sortedDishes.map((dish) => (
+          <DishCard key={dish.id} dish={dish} />
         ))}
       </div>
     </div>
   );
 };
-RestaurantsList.propTypes = {
-  restaurants: PropTypes.arrayOf(
+
+DishesList.propTypes = {
+  dishes: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number.isRequired,
       name: PropTypes.string.isRequired,
@@ -32,4 +33,4 @@ RestaurantsList.propTypes = {
   ).isRequired,
 };
 
-export default RestaurantsList;
+export default DishesList;

@@ -1,17 +1,8 @@
 import { useState } from "react";
-//import { FaSliders, FaArrowRightArrowLeft } from 'react-icons/fa6';
 import PropTypes from "prop-types";
 
 const FilterRow = ({ handleFilter }) => {
   const [activeCuisine, setActiveCuisine] = useState(0);
-
-  // const filtersList = [
-  //   { name: "Filters", icon: <FaSliders /> },
-  //   { name: "Rating: 4.0+", icon: null },
-  //   { name: "Safe and Hygienic", icon: null },
-  //   { name: "Delivery Time", icon: <FaArrowRightArrowLeft /> },
-  //   { name: "Cost", icon: null }
-  // ];
 
   const cuisinesList = [
     "All",
@@ -25,9 +16,9 @@ const FilterRow = ({ handleFilter }) => {
   ];
 
   const setFilter = (index) => {
-    setActiveCuisine(index)
+    setActiveCuisine(index);
     handleFilter({
-      selectedCuisine: cuisinesList[index]
+      selectedCuisine: cuisinesList[index],
     });
   };
 
@@ -49,19 +40,10 @@ const FilterRow = ({ handleFilter }) => {
           ))}
         </div>
       </div>
-      {/* <div className="flex flex-wrap gap-2">
-        {filtersList.map((item) => (
-          <button key={item.name} className="btn-primary border-gray-300 text-gray-400 p-2 flex items-center">
-            {item.icon && <span className="mr-1">{item.icon}</span>}
-            {item.name}
-          </button>
-        ))}
-      </div> */}
     </div>
   );
 };
 
-// PropTypes validation
 FilterRow.propTypes = {
   handleFilter: PropTypes.func.isRequired,
 };

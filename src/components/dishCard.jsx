@@ -13,7 +13,7 @@ const toggleDish = async (dishId) => {
   }
 };
 
-const RestaurantCard = ({ dish }) => {
+const DishCard = ({ dish, onToggle }) => {
   const [isPublished, setIsPublished] = useState(dish.isPublished);
 
   const handleToggle = async () => {
@@ -27,11 +27,12 @@ const RestaurantCard = ({ dish }) => {
     socket.on('dishUpdated', updatedDish => {
       if (updatedDish.dishId === dish.dishId) {
         setIsPublished(updatedDish.isPublished);
+        onToggle(updatedDish);
       }
     });
 
     return () => socket.disconnect();
-  }, [dish.dishId]);
+  }, [dish.dishId, onToggle]);
 
   return (
     <div className={`rounded-lg shadow-md overflow-hidden ${isPublished ? 'bg-white' : 'bg-gray-300'}`}>
@@ -50,7 +51,7 @@ const RestaurantCard = ({ dish }) => {
   );
 };
 
-RestaurantCard.propTypes = {
+DishCard.propTypes = {
   dish: PropTypes.shape({
     dishId: PropTypes.string.isRequired,
     dishName: PropTypes.string.isRequired,
@@ -58,6 +59,7 @@ RestaurantCard.propTypes = {
     isPublished: PropTypes.bool.isRequired,
     cuisine: PropTypes.string.isRequired,
   }).isRequired,
+  onToggle: PropTypes.func.isRequired,
 };
 
-export default RestaurantCard;
+export default DishCard;
